@@ -449,7 +449,7 @@ class ValidationManager:
         return error_rows
 
     def runCrossValidation(self, job, interfaces):
-        logger.info("D-FILE-DEBUG: Starting cross file validation for Job ID " + job.job_id)
+        logger.info('D-FILE-DEBUG: Starting cross file validation for Job ID %s', job.job_id)
 
         """ Cross file validation job, test all rules with matching rule_timing """
         sess = GlobalDB.db().session
@@ -483,17 +483,17 @@ class ValidationManager:
                 RuleSql.target_file_id==first_file.id)))
             # send comboRules to validator.crossValidate sql
 
-            logger.info("D-FILE-DEBUG: About to run crossValidateSql")
+            logger.info('D-FILE-DEBUG: About to run crossValidateSql')
 
             failures = Validator.crossValidateSql(comboRules.all(), submission_id, self.short_to_long_dict)
 
-            logger.info("D-FILE-DEBUG: Finished running crossValidateSql")
+            logger.info('D-FILE-DEBUG: Finished running crossValidateSql')
 
             # get error file name
             reportFilename = self.getFileName(get_cross_report_name(submission_id, first_file.name, second_file.name))
             warningReportFilename = self.getFileName(get_cross_warning_report_name(submission_id, first_file.name, second_file.name))
 
-            logger.info("D-FILE-DEBUG: Creating error report")
+            logger.info('D-FILE-DEBUG: Creating error report')
 
             # loop through failures to create the error report
             with self.getWriter(regionName, bucketName, reportFilename, self.crossFileReportHeaders) as writer, \
@@ -508,23 +508,23 @@ class ValidationManager:
                 writer.finishBatch()
                 warningWriter.finishBatch()
 
-        logger.info("D-FILE-DEBUG: About to call writeAllRowErrors")
+        logger.info('D-FILE-DEBUG: About to call writeAllRowErrors')
 
         error_list.writeAllRowErrors(job_id)
 
-        logger.info("D-FILE-DEBUG: Finished running writeAllRowErrors")
+        logger.info('D-FILE-DEBUG: Finished running writeAllRowErrors')
 
         mark_job_status(job_id, "finished")
         _exception_logger.info(
             'VALIDATOR_INFO: Completed runCrossValidation on submission_id: '
             '%s', submission_id)
 
-        logger.info("D-FILE-DEBUG: Updating error info for submission => calling populateSubmissionErrorInfo")
+        logger.info('D-FILE-DEBUG: Updating error info for submission => calling populateSubmissionErrorInfo')
 
         # Update error info for submission
         interfaces.jobDb.populateSubmissionErrorInfo(submission_id)
 
-        logger.info("D-FILE-DEBUG: Finished updating error info for submission => done with populateSubmissionErrorInfo")
+        logger.info('D-FILE-DEBUG: Finished updating error info for submission => done with populateSubmissionErrorInfo')
 
         # TODO: Remove temporary step below
         # Temporarily set publishable flag at end of cross file, remove this once users are able to mark their submissions
@@ -533,7 +533,7 @@ class ValidationManager:
         if sess.query(Submission).filter_by(submission_id = submission_id).one().number_of_errors == 0:
             interfaces.jobDb.setPublishableFlag(submission_id, True)
 
-        logger.info("D-FILE-DEBUG: Marking validation as complete")
+        logger.info('D-FILE-DEBUG: Marking validation as complete')
 
         # Mark validation complete
         markFileComplete(job_id)

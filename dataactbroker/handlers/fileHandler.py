@@ -640,7 +640,7 @@ class FileHandler:
             job - Job object for upload job
         """
 
-        logger.info("D-FILE-DEBUG: Calling add_job_info_for_d_file")
+        logger.info('D-FILE-DEBUG: Calling add_job_info_for_d_file')
 
         jobDb = self.interfaces.jobDb
         try:
@@ -665,22 +665,22 @@ class FileHandler:
 
         if not self.isLocal:
 
-            logger.info("D-FILE-DEBUG: Not local part of add_job_info_for_d_file")
+            logger.info('D-FILE-DEBUG: Not local part of add_job_info_for_d_file')
 
             # Create file D API URL with dates and callback URL
             callback = "{}://{}:{}/v1/complete_generation/{}/".format(CONFIG_SERVICES["protocol"],CONFIG_SERVICES["broker_api_host"], CONFIG_SERVICES["broker_api_port"],task_key)
 
-            logger.info("D-FILE-DEBUG: Callback URL for file type " + file_type + " = " + callback)
+            logger.info('D-FILE-DEBUG: Callback URL for file type %s = %s', file_type, callback)
 
             _debug_logger.debug('Callback URL for %s: %s', file_type, callback)
             get_url = CONFIG_BROKER["".join([file_type_name, "_url"])].format(cgac_code, start_date, end_date, callback)
 
             _debug_logger.debug('Calling D file API => %s', get_url)
             try:
-                logger.info("D-FILE-DEBUG: Calling call_d_file_api")
+                logger.info('D-FILE-DEBUG: Calling call_d_file_api')
                 if not self.call_d_file_api(get_url):
                     self.handleEmptyResponse(job, val_job)
-                logger.info("D-FILE-DEBUG: Finished call_d_file_api")
+                logger.info('D-FILE-DEBUG: Finished call_d_file_api')
             except Timeout as e:
                 exc = ResponseException(str(e), StatusCode.CLIENT_ERROR, Timeout)
                 return False, JsonResponse.error(e, exc.status, url="", start="", end="", file_type=file_type)
@@ -814,7 +814,7 @@ class FileHandler:
         _debug_logger.debug('Starting D file generation')
         submission_id, file_type = self.getRequestParamsForGenerate()
 
-        logger.info("D-FILE-DEBUG: Starting D file generation for Submission " + submission_id + " for File Type " + file_type)
+        logger.info('D-FILE-DEBUG: Starting D file generation for Submission %s for File Type %s', submission_id, file_type)
 
         _debug_logger.debug('Submission ID = %s / File type = %s',
                             submission_id, file_type)
@@ -842,7 +842,7 @@ class FileHandler:
             self.interfaces.mark_job_status(job.job_id, "failed")
             return error_response
 
-        logger.info("D-FILE-DEBUG: Calling checkGeneration")
+        logger.info('D-FILE-DEBUG: Calling checkGeneration')
         # Return same response as check generation route
         return self.checkGeneration(submission_id, file_type)
 
@@ -853,7 +853,7 @@ class FileHandler:
             Response object with keys status, file_type, url, message.  If file_type is D1 or D2, also includes start and end.
         """
 
-        logger.info("D-FILE-DEBUG: Starting checkGeneration")
+        logger.info('D-FILE-DEBUG: Starting checkGeneration')
 
         if submission_id is None or file_type is None:
             submission_id, file_type = self.getRequestParamsForGenerate()
@@ -882,7 +882,7 @@ class FileHandler:
             responseDict["start"] = uploadJob.start_date.strftime("%m/%d/%Y") if uploadJob.start_date is not None else ""
             responseDict["end"] = uploadJob.end_date.strftime("%m/%d/%Y") if uploadJob.end_date is not None else ""
 
-        logger.info("D-FILE-DEBUG: Finished checkGeneration. Response dict => " + json.dumps(responseDict))
+        logger.info('D-FILE-DEBUG: Finished checkGeneration. Response dict => %s', json.dumps(responseDict))
 
         return JsonResponse.create(StatusCode.OK,responseDict)
 
@@ -950,7 +950,7 @@ class FileHandler:
 
         """
 
-        logger.info("D-FILE-DEBUG: Calling completeGeneration (i.e., callback for SMX)")
+        logger.info('D-FILE-DEBUG: Calling completeGeneration (i.e., callback for SMX)')
 
         sess = GlobalDB.db().session
         try:
@@ -982,15 +982,15 @@ class FileHandler:
             task = self.interfaces.jobDb.session.query(FileGenerationTask).options(joinedload(FileGenerationTask.file_type)).filter(FileGenerationTask.generation_task_key == generationId).one()
             job = sess.query(Job).filter_by(job_id = task.job_id).one()
 
-            logger.info("D-FILE-DEBUG: Running checkGeneration on Job ID " + job.job_id)
+            logger.info('D-FILE-DEBUG: Running checkGeneration on Job ID %s', job.job_id)
 
             _smx_logger.debug('Loading D file...')
 
-            logger.info("D-FILE-DEBUG: Calling load_d_file")
+            logger.info('D-FILE-DEBUG: Calling load_d_file')
 
             result = self.load_d_file(url,job.filename,job.original_filename,job.job_id,self.isLocal)
 
-            logger.info("D-FILE-DEBUG: Finished load_d_file with result = " + result)
+            logger.info('D-FILE-DEBUG: Finished load_d_file with result = %s', result)
 
             _smx_logger.debug('Load D file result => %s', result)
             return JsonResponse.create(StatusCode.OK,{"message":"File loaded successfully"})

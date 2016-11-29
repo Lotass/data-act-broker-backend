@@ -28,7 +28,7 @@ class Validator(object):
             submissionId -- ID of submission to run cross-file validation
         """
 
-        logger.info("D-FILE-DEBUG: Inside crossValidateSql")
+        logger.info('D-FILE-DEBUG: Inside crossValidateSql')
 
         failures = []
         # Put each rule through evaluate, appending all failures into list
@@ -36,7 +36,7 @@ class Validator(object):
 
         for rule in rules:
 
-            logger.info("D-FILE-DEBUG: Running Rule => " + rule.rule_label + " on Target File ID => " + rule.target_file_id)
+            logger.info('D-FILE-DEBUG: Running Rule => %s on Target File ID %s', rule.rule_label, rule.target_file_id)
 
             failedRows = conn.execute(
                 rule.rule_sql.format(submissionId))

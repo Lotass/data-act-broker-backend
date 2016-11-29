@@ -47,7 +47,7 @@ class ErrorInterface:
             job_id: ID to write errors for
         """
 
-        logger.info("D-FILE-DEBUG: Inside writeAllRowErrors")
+        logger.info('D-FILE-DEBUG: Inside writeAllRowErrors')
 
         sess = GlobalDB.db().session
         for key in self.rowErrors.keys():
