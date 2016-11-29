@@ -4,6 +4,9 @@ from dataactvalidator.validation_handlers.validationError import ValidationError
 from dataactcore.interfaces.db import GlobalDB
 
 from dataactcore.models.lookups import ERROR_TYPE_DICT
+import logging
+
+logger = logging.getLogger(__name__)
 
 class ErrorInterface:
     """Manages communication with error database."""
@@ -43,6 +46,9 @@ class ErrorInterface:
         Args:
             job_id: ID to write errors for
         """
+
+        logger.info("D-FILE-DEBUG: Inside writeAllRowErrors")
+
         sess = GlobalDB.db().session
         for key in self.rowErrors.keys():
             errorDict = self.rowErrors[key]

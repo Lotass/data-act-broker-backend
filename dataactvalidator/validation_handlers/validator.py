@@ -7,6 +7,7 @@ from dataactcore.models.validationModels import RuleSql
 from dataactvalidator.validation_handlers.validationError import ValidationError
 from dataactcore.interfaces.db import GlobalDB
 
+logger = logging.getLogger(__name__)
 _exception_logger = logging.getLogger('deprecated.exception')
 
 class Validator(object):
@@ -26,11 +27,17 @@ class Validator(object):
             rules -- List of Rule objects
             submissionId -- ID of submission to run cross-file validation
         """
+
+        logger.info("D-FILE-DEBUG: Inside crossValidateSql")
+
         failures = []
         # Put each rule through evaluate, appending all failures into list
         conn = GlobalDB.db().connection
 
         for rule in rules:
+
+            logger.info("D-FILE-DEBUG: Running Rule => " + rule.rule_label + " on Target File ID => " + rule.target_file_id)
+
             failedRows = conn.execute(
                 rule.rule_sql.format(submissionId))
             if failedRows.rowcount:
