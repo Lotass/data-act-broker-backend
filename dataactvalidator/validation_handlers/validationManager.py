@@ -289,7 +289,9 @@ class ValidationManager:
             filter(FileColumn.file_id == FILE_TYPE_DICT[fileType]). \
             all()
 
-        sess.expunge(fields)
+        for field in fields:
+            sess.expunge(field)
+
         csvSchema = {row.name_short: row for row in fields}
 
         try:
