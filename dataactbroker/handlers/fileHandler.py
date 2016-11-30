@@ -853,27 +853,47 @@ class FileHandler:
             Response object with keys status, file_type, url, message.  If file_type is D1 or D2, also includes start and end.
         """
 
-        logger.info('D-FILE-DEBUG: Starting checkGeneration')
+        logger.info('D-FILE-DEBUG: Starting checkGeneration file => %s', file_type)
 
+        logger.info('D-FILE-DEBUG: Getting request params, file => %s', file_type)
         if submission_id is None or file_type is None:
             submission_id, file_type = self.getRequestParamsForGenerate()
+        logger.info('D-FILE-DEBUG: Finished getting request params, file => %s', file_type)
+
+        logger.info('D-FILE-DEBUG: Checking submission permissions, file => %s', file_type)
         # Check permission to submission
         self.check_submission_by_id(submission_id, file_type)
+        logger.info('D-FILE-DEBUG: Finished checking submission permissions, file => %s', file_type)
 
+        logger.info('D-FILE-DEBUG: Getting upload job, file => %s', file_type)
         uploadJob = self.interfaces.jobDb.getJobBySubmissionFileTypeAndJobType(submission_id, self.fileTypeMap[file_type], "file_upload")
+        logger.info('D-FILE-DEBUG: Finished getting upload job, file => %s', file_type)
+
         if file_type in ["D1","D2"]:
+            logger.info('D-FILE-DEBUG: Getting validation job, file => %s', file_type)
             validationJob = self.interfaces.jobDb.getJobBySubmissionFileTypeAndJobType(submission_id, self.fileTypeMap[file_type], "csv_record_validation")
+            logger.info('D-FILE-DEBUG: Finished getting validation job, file => %s', file_type)
         else:
             validationJob = None
+
+        logger.info('D-FILE-DEBUG: Setting up response dict, file => %s', file_type)
         responseDict = {}
+
+        logger.info('D-FILE-DEBUG: Mapping generation status, file => %s', file_type)
         responseDict["status"] = self.mapGenerateStatus(uploadJob, validationJob)
+        logger.info('D-FILE-DEBUG: Finished mapping generation status, file => %s', file_type)
+
         responseDict["file_type"] = file_type
         responseDict["message"] = uploadJob.error_message or ""
         if uploadJob.filename is None:
             responseDict["url"] = "#"
         elif CONFIG_BROKER["use_aws"]:
             path, file_name = uploadJob.filename.split("/")
+
+            logger.info('D-FILE-DEBUG: Getting signed url, file => %s', file_type)
             responseDict["url"] = s3UrlHandler().getSignedUrl(path=path, fileName=file_name, bucketRoute=None, method="GET")
+            logger.info('D-FILE-DEBUG: Finished getting signed url, file => %s', file_type)
+
         else:
             responseDict["url"] = uploadJob.filename
 
