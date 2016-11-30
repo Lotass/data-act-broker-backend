@@ -288,6 +288,8 @@ class ValidationManager:
             options(joinedload('field_type')). \
             filter(FileColumn.file_id == FILE_TYPE_DICT[fileType]). \
             all()
+
+        sess.expunge(fields)
         csvSchema = {row.name_short: row for row in fields}
 
         try:
