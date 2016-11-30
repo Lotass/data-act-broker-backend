@@ -334,6 +334,7 @@ class ValidationManager:
                     # D files are obtained from upstream systems (ASP and FPDS) that perform their own basic validations,
                     # so these validations are not repeated here
                     if fileType in ["award", "award_procurement"]:
+                        logger.info('D-FILE-DEBUG: Skipping file; file type => %s; job id => %s', fileType, job.job_id)
                         # Skip basic validations for D files, set as valid to trigger write to staging
                         passedValidations = True
                         valid = True
