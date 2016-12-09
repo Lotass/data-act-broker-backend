@@ -250,6 +250,7 @@ def format_internal_tas(row):
 
 
 def get_sf133_list(sf133_path):
+    logger.info(CONFIG_BROKER['sf_133_bucket'])
     """Return info about existing SF133 files as a list of named tuples."""
     SF133File = namedtuple('SF133', ['full_file', 'file'])
     if sf133_path is not None:
